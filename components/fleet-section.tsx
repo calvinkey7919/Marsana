@@ -1,14 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { Vehicle } from "@/lib/data";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { BookingModal } from "./booking-modal";
 
 interface FleetSectionProps {
     vehicles: Vehicle[];
 }
 
 export function FleetSection({ vehicles }: FleetSectionProps) {
+    const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleBookClick = (vehicle: Vehicle) => {
+        setSelectedVehicle(vehicle);
+        setIsModalOpen(true);
+    };
+
     return (
         <section id="fleet" className="py-24 bg-gray-50">
             <div className="max-w-7xl mx-auto px-6">
@@ -46,12 +56,23 @@ export function FleetSection({ vehicles }: FleetSectionProps) {
                                     <p className="text-xs text-gray-500">Daily Rate</p>
                                     <p className="text-lg font-bold text-brand-primary">{car.daily} SAR</p>
                                 </div>
-                                <button className="bg-black text-white px-4 py-2 text-xs font-medium hover:bg-gray-800 transition-colors">Book Now</button>
+                                <button
+                                    onClick={() => handleBookClick(car)}
+                                    className="bg-black text-white px-4 py-2 text-xs font-medium hover:bg-gray-800 transition-colors"
+                                >
+                                    Book Now
+                                </button>
                             </div>
                         </motion.div>
                     ))}
                 </div>
             </div>
+
+            <BookingModal
+                vehicle={selectedVehicle}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </section>
     );
 }

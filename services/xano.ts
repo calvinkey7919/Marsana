@@ -16,7 +16,8 @@ class XanoService {
         try {
             const res = await fetch(`${XANO_BASE_URL}/vehicle`, {
                 headers: this.getHeaders(),
-                next: { revalidate: 60 } // Cache for 60 seconds
+                // next: { revalidate: 60 } // Disabling cache to ensure fresh data always
+                cache: 'no-store'
             });
 
             if (!res.ok) throw new Error("Failed to fetch fleet");
@@ -27,6 +28,14 @@ class XanoService {
             console.error("Xano Fetch Error:", error);
             return [];
         }
+    }
+
+    // Simple Auth Simulation 
+    // In a real scenario this would hit /auth/login endpoint on Xano
+    async login(email: string, pass: string): Promise<boolean> {
+        // Hardcoded for safety demo - replace with real Xano auth endpoint if available
+        if (email === "admin@marsana.com" && pass === "admin123") return true;
+        return false;
     }
 
     // Helper to map Xano data format to UI format
