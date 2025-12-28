@@ -21,11 +21,26 @@ class XanoService {
 
             if (!res.ok) throw new Error("Failed to fetch fleet");
 
-            return await res.json();
+            const data: XanoVehicle[] = await res.json();
+            return data;
         } catch (error) {
             console.error("Xano Fetch Error:", error);
             return [];
         }
+    }
+
+    // Helper to map Xano data format to UI format
+    mapToAppVehicle(xanoVehicle: XanoVehicle) {
+        return {
+            id: xanoVehicle.id.toString(),
+            year: xanoVehicle.year?.toString() || new Date().getFullYear().toString(),
+            model: xanoVehicle.model,
+            daily: xanoVehicle.daily_rate,
+            weekly: xanoVehicle.weekly_rate,
+            monthly: xanoVehicle.monthly_rate,
+            category: xanoVehicle.category || "Standard",
+            image: xanoVehicle.image?.url || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=400"
+        };
     }
 
     async createBooking(bookingData: Omit<XanoBooking, "id" | "created_at" | "status">) {

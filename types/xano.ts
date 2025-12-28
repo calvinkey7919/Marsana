@@ -7,9 +7,7 @@ export type XanoVehicle = {
     weekly_rate: number;
     monthly_rate: number;
     updated_at?: number;
-    // NOTE: These fields are needed for the UI but appear missing in your Xano table screenshot.
-    // We will handle them gracefully (optional) or you should add them to Xano.
-    image?: { url: string } | string;
+    image: { url: string } | null;
     category?: string;
 }
 
