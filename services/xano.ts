@@ -53,9 +53,14 @@ class XanoService {
     }
 
     async createBooking(bookingData: Omit<XanoBooking, "id" | "created_at" | "status">) {
-        if (!XANO_BASE_URL) throw new Error("API Configuration Missing");
+        // Fallback URL if env var is missing in production
+        const baseUrl = XANO_BASE_URL || "https://x8ki-letl-twmt.n7.xano.io/api:HQSAgVCW";
 
-        const res = await fetch(`${XANO_BASE_URL}/booking`, {
+        if (!baseUrl) throw new Error("API Configuration Missing");
+
+        console.log("Posting to:", `${baseUrl}/booking`);
+
+        const res = await fetch(`${baseUrl}/booking`, {
             method: "POST",
             headers: this.getHeaders(),
             body: JSON.stringify({
@@ -64,8 +69,19 @@ class XanoService {
             }),
         });
 
-        if (!res.ok) throw new Error("Booking Failed");
-        return await res.json();
+        if (!res.ok) {
+            // Try to parse error details from Xano
+            let errorMessage = "Booking Confirmation Failed";
+            try {
+                const errorData = await res.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // Raw text fallback
+                const text = await res.text();
+                if (text) errorMessage = `Server Error: ${text.slice(0, 50)}...`;
+            }
+            throw new Error(errorMessage);
+        }
     }
 }
 

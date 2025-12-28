@@ -32,6 +32,15 @@ export function BookingModal({ vehicle, isOpen, onClose }: BookingModalProps) {
         setError("");
 
         try {
+            console.log("Submitting booking...", {
+                vehicle_id: parseInt(vehicle.id),
+                customer_name: formData.name,
+                customer_phone: formData.phone,
+                pickup_date: formData.pickupDate,
+                dropoff_date: formData.dropoffDate,
+                pickup_location: formData.location
+            });
+
             await xanoService.createBooking({
                 vehicle_id: parseInt(vehicle.id),
                 customer_name: formData.name,
@@ -47,9 +56,10 @@ export function BookingModal({ vehicle, isOpen, onClose }: BookingModalProps) {
                 onClose();
                 setFormData({ name: "", phone: "", pickupDate: "", dropoffDate: "", location: "Jeddah Airport" });
             }, 3000);
-        } catch (err) {
-            setError("Failed to submit booking. Please try again.");
-            console.error(err);
+        } catch (err: any) {
+            console.error("Booking Submission Error:", err);
+            // Display the actual error message from the server if available
+            setError(err instanceof Error ? err.message : "Failed to connect to server. Check your connection.");
         } finally {
             setIsSubmitting(false);
         }
